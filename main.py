@@ -184,9 +184,25 @@ class PostDataFrame:
 
         pdf_fig.show()
 
-    def plot_time_vs_scaled_date(self):
+    def plot_time_vs_scaled_date(self, b_calc_reg):
         pdf = PostDataFrame(self.df.sort_values(by=['Time']))
-        pdf = pdf.create_time_as_seconds()
+        if b_calc_reg:
+            pdf = pdf.create_time_as_seconds()
+            x_data = 'Time in seconds'
+            trendline_type = 'lowess'
+        else:
+            time_data = pdf.df['Time']
+            today = datetime.today()
+            x_time_data = []
+            for time in time_data:
+                x_time = today
+                x_time = x_time.replace(hour = time.hour, minute = time.minute, second = time.second)
+                x_time_data.append(x_time)
+
+            pdf.df['X time'] = x_time_data
+            x_data = 'X time'
+            trendline_type = None
+
         orig_columns = pdf.df.columns
         pdf = pdf.create_scaled_count_data()
 
@@ -196,8 +212,9 @@ class PostDataFrame:
                                      'Scaled Shares',
                                      'Scaled Follows'])
 
+
         pdf_fig = px.scatter(df,
-                             x='Time in seconds',
+                             x=x_data,
                              y='value',
                              color='variable',
                              hover_name='variable',
@@ -210,7 +227,7 @@ class PostDataFrame:
                                          'Shares': True,
                                          'Follows': True},
                              labels={'variable': ''},
-                             trendline= 'lowess')
+                             trendline= trendline_type)
 
         pdf_fig.show()
 
@@ -218,8 +235,8 @@ class PostDataFrame:
 def graph_dates_vs_scaled_data():
     pdf = PostDataFrame.create_from_html(postInfo_file)
     pdf.clean_empty()
-    pdf.plot_dates_vs_scaled_date()
-    pdf.plot_time_vs_scaled_date()
+    #pdf.plot_dates_vs_scaled_date()
+    pdf.plot_time_vs_scaled_date(False)
 
 
 # Press the green button in the gutter to run the script.
