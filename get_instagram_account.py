@@ -27,4 +27,4 @@ print("\n---- INSTAGRAM ACCOUNT INFO ----\n")
 print("Page Id:") # label
 print(response['json_data']['id']) # display the page id
 print("\nInstagram Business Account Id:") # label
-print(response['json_data']['instagram_business_account']['id']) #display the instagram account id
+#print(response['json_data']['instagram_business_account']['id']) #display the instagram account id

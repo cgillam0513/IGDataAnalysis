@@ -30,12 +30,12 @@ def getCreds(app = 'Influencer Graphs') :
 
 	elif 'Influencer Graphs' == app:
 		creds[
-			'access_token'] = 'EAAI8GpzbiZAMBAPdyglU1vBKXYlcAdU7dYydA5ZBMnACW0ZAyrsvnwhzqZC9spXJNt7idllPca72eaQtjG7L0xNdCutMx0nF0nnolDFMZA9VusI3qyX5zppcXHmnYJFkZC9bzozj1qrYqqDtnakZAOE6CHI8mswfpVOSTf5dJXnDgZDZD'  # access token for use with all api calls
+			'access_token'] = 'EAAI8GpzbiZAMBAEZCqyyn7eCZCl7Lzk0xslYi1QkqZAZCDM3mZAq6g4SeIWOOTPRdnN9hqG37eV6kZBZBxHhkGvxThsAPM6VZBzuDJB78ZCZARSASYmyLoXSqkZB9Ma3wznMxlZCQBNmdXDzOnLenoESJfGFdoinueUM6mmy8EA2I8NZB3KwZDZD'  # access token for use with all api calls
 		creds['client_id'] = '629034951870867'  # client id from facebook app IG Graph API Test
 		creds['client_secret'] = '9bfd2d3d8bf7439f7c31fa48d7d82dd0'  # client secret from facebook app
 		creds['page_id'] = '100141416168356'  # users page id
 		creds['instagram_account_id'] = 'INSTAGRAM-BUSINESS-ACCOUNT-ID'  # users instagram account id
-		creds['ig_username'] = 'IG-USERNAME'  # ig username
+		creds['ig_username'] = 'more_ig_insights'  # ig username
 		creds['redirect_uri'] = 'https://moreinsights.herokuapp.com/auth'
 
 	return creds

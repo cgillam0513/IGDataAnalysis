@@ -1,5 +1,5 @@
-#import requests
-#import json
+# import requests
+# import json
 import datetime
 from utilies import getGraphConsts, makeApiCall  # , displayApiCallData
 
@@ -30,7 +30,7 @@ class FbApp:
         """
 
         endpointParams = dict()  # parameter to send to the endpoint
-        endpointParams['input_token'] = self.access_token # input token is the access token
+        endpointParams['input_token'] = self.access_token  # input token is the access token
         endpointParams['access_token'] = self.access_token  # access token to get debug info on
 
         if graph_consts is None:
@@ -165,7 +165,7 @@ class FbApp:
 
         return ig_business_accnt_id, page_id
 
-    def getAccountInfo(self, user_ids:UserIds, graph_consts=None, b_print=False):
+    def getAccountInfo(self, user_ids: UserIds, graph_consts=None, b_print=False):
         """ Get info on a users account
 
         API Endpoint:
@@ -189,19 +189,21 @@ class FbApp:
         response = makeApiCall(url, endpointParams, 'no')  # make the api call
 
         if b_print:
-            print( "\n---- ACCOUNT INFO -----\n")  # display latest post info
+            print("\n---- ACCOUNT INFO -----\n")  # display latest post info
             print("username:")  # label
             print(response['json_data']['business_discovery']['username'])  # display username
             # print( "\nwebsite:" ) # label
             # print(response['json_data']['business_discovery']['website'])  # display users website
             print("\nnumber of posts:")  # label
             print(response['json_data']['business_discovery']['media_count'])  # display number of posts user has made
-            print("\nfollowers:") # label
-            print(response['json_data']['business_discovery']['followers_count'])  # display number of followers the user has
+            print("\nfollowers:")  # label
+            print(response['json_data']['business_discovery'][
+                      'followers_count'])  # display number of followers the user has
             print("\nfollowing:")  # label
-            print(response['json_data']['business_discovery']['follows_count'] ) # display number of people the user follows
+            print(response['json_data']['business_discovery'][
+                      'follows_count'])  # display number of people the user follows
             print("\nprofile picture url:")  # label
-            print(response['json_data']['business_discovery']['profile_picture_url']) # display profile picutre url
+            print(response['json_data']['business_discovery']['profile_picture_url'])  # display profile picutre url
             # print("\nbiography:" ) # label
             # print(response['json_data']['business_discovery']['biography'])  # display users about section
         return response
@@ -220,6 +222,80 @@ class FbApp:
             my_user_ids = MyUserId.createMyUserId(self, graph_consts)
 
         return self.getAccountInfo(my_user_ids, graph_consts, b_print)
+
+    def getUserMedia(self, user_ids: UserIds, pagingUrl='', graph_consts=None, b_print=False):
+        """ Get users media
+
+        API Endpoint:
+            https://graph.facebook.com/{graph-api-version}/{ig-user-id}/media?fields={fields}&access_token={access-token}
+
+        Returns:
+            object: data from the endpoint
+
+        """
+
+        endpointParams = dict()  # parameter to send to the endpoint
+        endpointParams[
+            'fields'] = 'id,caption,media_type,media_url,permalink,thumbnail_url,timestamp,username'  # fields to get back
+        endpointParams['access_token'] = self.access_token  # access token
+
+        if graph_consts is None:
+            graph_consts = getGraphConsts()
+
+        if '' == pagingUrl:  # get first page
+            url = graph_consts['endpoint_base'] + user_ids.instagram_account_id + '/media'  # endpoint url
+        else:  # get specific page
+            url = pagingUrl  # endpoint url
+
+        response = makeApiCall(url, endpointParams, 'no')  # make the api call
+
+        if b_print:
+            print("\n\n\n\t\t\t >>>>>>>>>>>>>>>>>>>> PAGE 1 <<<<<<<<<<<<<<<<<<<<\n")  # display page 1 of the posts
+
+            for post in response['json_data']['data']:
+                print("\n\n---------- POST ----------\n")  # post heading
+                print("Link to post:")  # label
+                print(post['permalink'])  # link to post
+                print("\nPost caption:")  # label
+                print(post['caption'])  # post caption
+                print("\nMedia type:")  # label
+                print(post['media_type'])  # type of media
+                print("\nPosted at:")  # label
+                print(post['timestamp'])  # when it was posted
+
+            # response = self.getUserMedia(user_ids, graph_consts,
+            #                              response['json_data']['paging']['next'])  # get next page of posts from the api
+            #
+            # print("\n\n\n\t\t\t >>>>>>>>>>>>>>>>>>>> PAGE 2 <<<<<<<<<<<<<<<<<<<<\n")  # display page 2 of the posts
+            #
+            # for post in response['json_data']['data']:
+            #     print("\n\n---------- POST ----------\n")  # post heading
+            #     print("Link to post:")  # label
+            #     print(post['permalink'])  # link to post
+            #     print("\nPost caption:")  # label
+            #     print(post['caption'])  # post caption
+            #     print("\nMedia type:")  # label
+            #     print(post['media_type'])  # type of media
+            #     print("\nPosted at:")  # label
+            #     print(post['timestamp'])  # when it was posted
+
+    def getMyUserMedia(self, my_user_ids: UserIds = None, pagingUrl='', graph_consts=None, b_print=False):
+        if my_user_ids is None:
+            my_user_ids = MyUserId.createMyUserId(self, graph_consts=graph_consts)
+
+        return self.getUserMedia(my_user_ids, pagingUrl, graph_consts, b_print)
+
+    def getMyFields(self, my_user_ids: UserIds = None, graph_consts = None):#, b_print=False):
+        if graph_consts is None:
+            graph_consts = getGraphConsts()
+
+        if my_user_ids is None:
+            my_user_ids = MyUserId.createMyUserId(self, graph_consts)
+
+        endpointParams = dict()  # parameter to send to the endpoint
+        endpointParams['access_token'] = self.access_token  # access token
+        url = graph_consts['endpoint_base'] + my_user_ids.instagram_account_id # endpoint url
+        return makeApiCall(url, endpointParams, 'yes')  # make the api call
 
 
 class MyUserId(UserIds):
@@ -249,14 +325,15 @@ class GraphCaller:
 
 
 getStarted_app = FbApp('GetStarted',
-                        'EAAQBZBK60IXsBAK0HgP10OmvMZCuJgicZBdnZBmgTwrmQvAcJiN2Jrg02bgDpmZBucInqHiZADDnxMGCcZB1d1CwZAabfB68xEwUgxQFwqQZBBz25yZBFWlqZBXTVZCdXqrvnXpw9SptVRmsggELCuxEAmfk5mXlYp0DKiaZCQEomxiYgRgZDZD',
-                        '593120055695582',
-                        'f1eaeeb1a48aaa00c709cd16fdaf6751')
+                       'EAAQBZBK60IXsBAK0HgP10OmvMZCuJgicZBdnZBmgTwrmQvAcJiN2Jrg02bgDpmZBucInqHiZADDnxMGCcZB1d1CwZAabfB68xEwUgxQFwqQZBBz25yZBFWlqZBXTVZCdXqrvnXpw9SptVRmsggELCuxEAmfk5mXlYp0DKiaZCQEomxiYgRgZDZD',
+                       '593120055695582',
+                       'f1eaeeb1a48aaa00c709cd16fdaf6751')
 
 influencersGraphs_app = FbApp('Influencer Graphs',
-                               'EAAI8GpzbiZAMBAPdyglU1vBKXYlcAdU7dYydA5ZBMnACW0ZAyrsvnwhzqZC9spXJNt7idllPca72eaQtjG7L0xNdCutMx0nF0nnolDFMZA9VusI3qyX5zppcXHmnYJFkZC9bzozj1qrYqqDtnakZAOE6CHI8mswfpVOSTf5dJXnDgZDZD',
-                               '629034951870867',
-                               '9bfd2d3d8bf7439f7c31fa48d7d82dd0')
+                              'EAAI8GpzbiZAMBAEZCqyyn7eCZCl7Lzk0xslYi1QkqZAZCDM3mZAq6g4SeIWOOTPRdnN9hqG37eV6kZBZBxHhkGvxThsAPM6VZBzuDJB78ZCZARSASYmyLoXSqkZB9Ma3wznMxlZCQBNmdXDzOnLenoESJfGFdoinueUM6mmy8EA2I8NZB3KwZDZD',
+                              '629034951870867',
+                              '9bfd2d3d8bf7439f7c31fa48d7d82dd0')
 
-
-influencersGraphs_app.getMyAccountInfo(b_print=True)
+#influencersGraphs_app.debugAccessToken(debug = 'yes')
+response = influencersGraphs_app.getMyFields()
+print(response)
